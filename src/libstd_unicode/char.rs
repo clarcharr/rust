@@ -63,6 +63,16 @@ impl Iterator for ToLowercase {
     fn next(&mut self) -> Option<char> {
         self.0.next()
     }
+    fn last(self) -> Option<char> {
+        self.0.last()
+    }
+}
+
+#[stable(feature = "to_case_extra", since = "1.17.0")]
+impl DoubleEndedIterator for ToLowercase {
+    fn next_back(&mut self) -> Option<char> {
+        self.0.next_back()
+    }
 }
 
 #[unstable(feature = "fused", issue = "35602")]
@@ -83,6 +93,16 @@ impl Iterator for ToUppercase {
     type Item = char;
     fn next(&mut self) -> Option<char> {
         self.0.next()
+    }
+    fn last(self) -> Option<char> {
+        self.0.last()
+    }
+}
+
+#[stable(feature = "to_case_extra", since = "1.17.0")]
+impl DoubleEndedIterator for ToUppercase {
+    fn next_back(&mut self) -> Option<char> {
+        self.0.next_back()
     }
 }
 
@@ -125,6 +145,29 @@ impl Iterator for CaseMappingIter {
             CaseMappingIter::One(c) => {
                 *self = CaseMappingIter::Zero;
                 Some(c)
+            }
+            CaseMappingIter::Zero => None,
+        }
+    }
+    fn last(mut self) -> Option<char> {
+        self.next_back()
+    }
+}
+
+impl DoubleEndedIterator for CaseMappingIter {
+    fn next_back(&mut self) -> Option<char> {
+        match *self {
+            CaseMappingIter::Three(a, b, c) => {
+                *self = CaseMappingIter::Two(a, b);
+                Some(c)
+            }
+            CaseMappingIter::Two(a, b) => {
+                *self = CaseMappingIter::One(a);
+                Some(b)
+            }
+            CaseMappingIter::One(a) => {
+                *self = CaseMappingIter::Zero;
+                Some(a)
             }
             CaseMappingIter::Zero => None,
         }
