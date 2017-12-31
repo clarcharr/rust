@@ -102,15 +102,12 @@ enum CaseMappingIter {
 }
 
 impl CaseMappingIter {
-    fn new(chars: [char; 3]) -> CaseMappingIter {
-        if chars[2] == '\0' {
-            if chars[1] == '\0' {
-                CaseMappingIter::One(chars[0])  // Including if chars[0] == '\0'
-            } else {
-                CaseMappingIter::Two(chars[0], chars[1])
-            }
-        } else {
-            CaseMappingIter::Three(chars[0], chars[1], chars[2])
+    fn new(chars: &[char]) -> CaseMappingIter {
+        match chars {
+            &[c1] => CaseMappingIter::One(c1),
+            &[c1, c2] => CaseMappingIter::Two(c1, c2),
+            &[c1, c2, c3] => CaseMappingIter::Three(c1, c2, c3),
+            _ => unreachable!(),
         }
     }
 }
@@ -838,7 +835,7 @@ impl char {
     #[stable(feature = "rust1", since = "1.0.0")]
     #[inline]
     pub fn to_lowercase(self) -> ToLowercase {
-        ToLowercase(CaseMappingIter::new(conversions::to_lower(self)))
+        ToLowercase(CaseMappingIter::new(conversions::to_lower(self).as_slice()))
     }
 
     /// Returns an iterator that yields the uppercase equivalent of a `char`
@@ -924,7 +921,7 @@ impl char {
     #[stable(feature = "rust1", since = "1.0.0")]
     #[inline]
     pub fn to_uppercase(self) -> ToUppercase {
-        ToUppercase(CaseMappingIter::new(conversions::to_upper(self)))
+        ToUppercase(CaseMappingIter::new(conversions::to_upper(self).as_slice()))
     }
 
     /// Checks if the value is within the ASCII range.

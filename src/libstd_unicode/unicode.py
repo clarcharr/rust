@@ -495,29 +495,59 @@ def emit_conversions_module(f, to_upper, to_lower, to_title):
     f.write("""
     use core::option::Option;
     use core::option::Option::{Some, None};
+    use core::slice::from_raw_parts;
 
-    pub fn to_lower(c: char) -> [char; 3] {
+    /// Used for storage efficiency.
+    #[derive(Copy, Clone)]
+    pub enum CaseMapping {
+        One(char),
+        Two(&'static [char; 2]),
+        Three(&'static [char; 3]),
+    }
+    impl CaseMapping {
+        pub fn as_slice(&self) -> &[char] {
+            match *self {
+                CaseMapping::One(ref c) => unsafe {
+                    from_raw_parts(c as *const char, 1)
+                },
+                CaseMapping::Two(s) => &s[..],
+                CaseMapping::Three(s) => &s[..],
+            }
+        }
+    }
+
+    pub fn to_lower(c: char) -> CaseMapping {
         match bsearch_case_table(c, to_lowercase_table) {
-            None        => [c, '\\0', '\\0'],
+            None        => CaseMapping::One(c),
             Some(index) => to_lowercase_table[index].1,
         }
     }
 
-    pub fn to_upper(c: char) -> [char; 3] {
+    pub fn to_upper(c: char) -> CaseMapping {
         match bsearch_case_table(c, to_uppercase_table) {
-            None        => [c, '\\0', '\\0'],
+            None        => CaseMapping::One(c),
             Some(index) => to_uppercase_table[index].1,
         }
     }
 
-    fn bsearch_case_table(c: char, table: &'static [(char, [char; 3])]) -> Option<usize> {
+    fn bsearch_case_table(c: char, table: &'static [(char, CaseMapping)]) -> Option<usize> {
         table.binary_search_by(|&(key, _)| key.cmp(&c)).ok()
     }
 
 """)
-    t_type = "&'static [(char, [char; 3])]"
-    pfun = lambda x: "(%s,[%s,%s,%s])" % (
-        escape_char(x[0]), escape_char(x[1][0]), escape_char(x[1][1]), escape_char(x[1][2]))
+    t_type = "&'static [(char, CaseMapping)]"
+    def pfun(x):
+        key = escape_char(x[0])
+        c1 = escape_char(x[1][0])
+        c2 = escape_char(x[1][1])
+        c3 = escape_char(x[1][2])
+        if x[1][2] == 0:
+            if x[1][1] == 0:
+                return "(%s,CaseMapping::One(%s))" % (key, c1)
+            else:
+                return "(%s,CaseMapping::Two(&[%s,%s]))" % (key, c1, c2)
+        else:
+            return "(%s,CaseMapping::Three(&[%s,%s,%s]))" % (key, c1, c2, c3)
     emit_table(f, "to_lowercase_table",
         sorted(to_lower.items(), key=operator.itemgetter(0)),
         is_pub=False, t_type = t_type, pfun=pfun)

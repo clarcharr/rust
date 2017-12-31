@@ -8,9 +8,10 @@
 // option. This file may not be copied, modified, or distributed
 // except according to those terms.
 
-#![feature(str_internals, unicode)]
+use core::mem::size_of;
+use std_unicode::tables::conversion::CaseMapping;
 
-extern crate std_unicode;
-
-mod lossy;
-mod mapping_size;
+#[test]
+fn case_mapping_size() {
+    assert_eq!(size_of::<CaseMapping>(), size_of::<char>())
+}
