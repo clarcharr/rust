@@ -45,10 +45,10 @@ use syntax::attr;
 
 /// The LLVM module name containing crate-metadata. This includes a `.` on
 /// purpose, so it cannot clash with the name of a user-defined module.
-pub const METADATA_MODULE_NAME: &'static str = "crate.metadata";
+pub const METADATA_MODULE_NAME: &str = "crate.metadata";
 
 // same as for metadata above, but for allocator shim
-pub const ALLOCATOR_MODULE_NAME: &'static str = "crate.allocator";
+pub const ALLOCATOR_MODULE_NAME: &str = "crate.allocator";
 
 pub use rustc_trans_utils::link::{find_crate_name, filename_for_input, default_output_for_target,
                                   invalid_output_for_target, build_link_meta, out_filename,

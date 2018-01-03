@@ -29,7 +29,7 @@ use syntax::tokenstream;
 
 use syntax::util::small_vector::SmallVector;
 
-pub const MACRO: &'static str = "global_asm";
+pub const MACRO: &str = "global_asm";
 
 pub fn expand_global_asm<'cx>(cx: &'cx mut ExtCtxt,
                               sp: Span,

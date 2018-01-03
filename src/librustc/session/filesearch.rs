@@ -188,14 +188,14 @@ fn find_libdir(sysroot: &Path) -> Cow<'static, str> {
     }
 
     #[cfg(target_pointer_width = "64")]
-    const PRIMARY_LIB_DIR: &'static str = "lib64";
+    const PRIMARY_LIB_DIR: &str = "lib64";
 
     #[cfg(target_pointer_width = "32")]
-    const PRIMARY_LIB_DIR: &'static str = "lib32";
+    const PRIMARY_LIB_DIR: &str = "lib32";
 
-    const SECONDARY_LIB_DIR: &'static str = "lib";
+    const SECONDARY_LIB_DIR: &str = "lib";
 }
 
 // The name of rustc's own place to organize libraries.
 // Used to be "rustc", now the default is "rustlib"
-const RUST_LIB_DIR: &'static str = "rustlib";
+const RUST_LIB_DIR: &str = "rustlib";

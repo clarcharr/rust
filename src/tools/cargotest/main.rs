@@ -22,7 +22,7 @@ struct Test {
     packages: &'static [&'static str],
 }
 
-const TEST_REPOS: &'static [Test] = &[
+const TEST_REPOS: &[Test] = &[
     Test {
         name: "iron",
         repo: "https://github.com/iron/iron",

@@ -323,7 +323,7 @@ struct ElisionFailureInfo {
 
 type ScopeRef<'a> = &'a Scope<'a>;
 
-const ROOT_SCOPE: ScopeRef<'static> = &Scope::Root;
+const ROOT_SCOPE: ScopeRef<'_> = &Scope::Root;
 
 pub fn provide(providers: &mut ty::maps::Providers) {
     *providers = ty::maps::Providers {

@@ -26,15 +26,15 @@ mod impls_misc;
 mod impls_ty;
 mod impls_syntax;
 
-pub const ATTR_DIRTY: &'static str = "rustc_dirty";
-pub const ATTR_CLEAN: &'static str = "rustc_clean";
-pub const ATTR_IF_THIS_CHANGED: &'static str = "rustc_if_this_changed";
-pub const ATTR_THEN_THIS_WOULD_NEED: &'static str = "rustc_then_this_would_need";
-pub const ATTR_PARTITION_REUSED: &'static str = "rustc_partition_reused";
-pub const ATTR_PARTITION_TRANSLATED: &'static str = "rustc_partition_translated";
+pub const ATTR_DIRTY: &str = "rustc_dirty";
+pub const ATTR_CLEAN: &str = "rustc_clean";
+pub const ATTR_IF_THIS_CHANGED: &str = "rustc_if_this_changed";
+pub const ATTR_THEN_THIS_WOULD_NEED: &str = "rustc_then_this_would_need";
+pub const ATTR_PARTITION_REUSED: &str = "rustc_partition_reused";
+pub const ATTR_PARTITION_TRANSLATED: &str = "rustc_partition_translated";
 
 
-pub const DEP_GRAPH_ASSERT_ATTRS: &'static [&'static str] = &[
+pub const DEP_GRAPH_ASSERT_ATTRS: &[&str] = &[
     ATTR_IF_THIS_CHANGED,
     ATTR_THEN_THIS_WOULD_NEED,
     ATTR_DIRTY,
@@ -43,7 +43,7 @@ pub const DEP_GRAPH_ASSERT_ATTRS: &'static [&'static str] = &[
     ATTR_PARTITION_TRANSLATED,
 ];
 
-pub const IGNORED_ATTRIBUTES: &'static [&'static str] = &[
+pub const IGNORED_ATTRIBUTES: &[&str] = &[
     "cfg",
     ATTR_IF_THIS_CHANGED,
     ATTR_THEN_THIS_WOULD_NEED,

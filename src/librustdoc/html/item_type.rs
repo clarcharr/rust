@@ -169,9 +169,9 @@ impl fmt::Display for ItemType {
     }
 }
 
-pub const NAMESPACE_TYPE: &'static str = "t";
-pub const NAMESPACE_VALUE: &'static str = "v";
-pub const NAMESPACE_MACRO: &'static str = "m";
+pub const NAMESPACE_TYPE: &str = "t";
+pub const NAMESPACE_VALUE: &str = "v";
+pub const NAMESPACE_MACRO: &str = "m";
 
 impl NameSpace {
     pub fn to_static_str(&self) -> &'static str {

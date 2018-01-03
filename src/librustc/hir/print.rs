@@ -62,7 +62,7 @@ pub trait PpAnn {
 
 pub struct NoAnn;
 impl PpAnn for NoAnn {}
-pub const NO_ANN: &'static PpAnn = &NoAnn;
+pub const NO_ANN: &PpAnn = &NoAnn;
 
 impl PpAnn for hir::Crate {
     fn nested(&self, state: &mut State, nested: Nested) -> io::Result<()> {

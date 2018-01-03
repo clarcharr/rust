@@ -109,8 +109,8 @@ pub mod pretty;
 pub mod target_features;
 mod derive_registrar;
 
-const BUG_REPORT_URL: &'static str = "https://github.com/rust-lang/rust/blob/master/CONTRIBUTING.\
-                                      md#bug-reports";
+const BUG_REPORT_URL: &str = "https://github.com/rust-lang/rust/blob/master/CONTRIBUTING.md\
+                              #bug-reports";
 
 pub fn abort_on_err<T>(result: Result<T, CompileIncomplete>, sess: &Session) -> T {
     match result {
@@ -175,9 +175,9 @@ mod rustc_trans {
 
     pub mod back {
         pub mod write {
-            pub const RELOC_MODEL_ARGS: [(&'static str, ()); 0] = [];
-            pub const CODE_GEN_MODEL_ARGS: [(&'static str, ()); 0] = [];
-            pub const TLS_MODEL_ARGS: [(&'static str, ()); 0] = [];
+            pub const RELOC_MODEL_ARGS: [(&str, ()); 0] = [];
+            pub const CODE_GEN_MODEL_ARGS: [(&str, ()); 0] = [];
+            pub const TLS_MODEL_ARGS: [(&str, ()); 0] = [];
         }
     }
 }

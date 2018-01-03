@@ -21,8 +21,8 @@ use syntax::ast;
 
 use monomorphize::Instance;
 
-const SYMBOL_NAME: &'static str = "rustc_symbol_name";
-const ITEM_PATH: &'static str = "rustc_item_path";
+const SYMBOL_NAME: &str = "rustc_symbol_name";
+const ITEM_PATH: &str = "rustc_item_path";
 
 pub fn report_symbol_names<'a, 'tcx>(tcx: TyCtxt<'a, 'tcx, 'tcx>) {
     // if the `rustc_attrs` feature is not enabled, then the

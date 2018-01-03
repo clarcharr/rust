@@ -58,7 +58,7 @@ macro_rules! declare_features {
         /// Represents active features that are currently being implemented or
         /// currently being considered for addition/removal.
         const ACTIVE_FEATURES:
-                &'static [(&'static str, &'static str, Option<u32>, fn(&mut Features, Span))] =
+                &[(&str, &str, Option<u32>, fn(&mut Features, Span))] =
             &[$((stringify!($feature), $ver, $issue, set!($feature))),+];
 
         /// A set of features to be used by later passes.
@@ -83,21 +83,21 @@ macro_rules! declare_features {
 
     ($((removed, $feature: ident, $ver: expr, $issue: expr),)+) => {
         /// Represents unstable features which have since been removed (it was once Active)
-        const REMOVED_FEATURES: &'static [(&'static str, &'static str, Option<u32>)] = &[
+        const REMOVED_FEATURES: &[(&str, &str, Option<u32>)] = &[
             $((stringify!($feature), $ver, $issue)),+
         ];
     };
 
     ($((stable_removed, $feature: ident, $ver: expr, $issue: expr),)+) => {
         /// Represents stable features which have since been removed (it was once Accepted)
-        const STABLE_REMOVED_FEATURES: &'static [(&'static str, &'static str, Option<u32>)] = &[
+        const STABLE_REMOVED_FEATURES: &[(&str, &str, Option<u32>)] = &[
             $((stringify!($feature), $ver, $issue)),+
         ];
     };
 
     ($((accepted, $feature: ident, $ver: expr, $issue: expr),)+) => {
         /// Those language feature has since been Accepted (it was once Active)
-        const ACCEPTED_FEATURES: &'static [(&'static str, &'static str, Option<u32>)] = &[
+        const ACCEPTED_FEATURES: &[(&str, &str, Option<u32>)] = &[
             $((stringify!($feature), $ver, $issue)),+
         ];
     }
@@ -614,7 +614,7 @@ pub fn is_builtin_attr(attr: &ast::Attribute) -> bool {
 }
 
 // Attributes that have a special meaning to rustc or rustdoc
-pub const BUILTIN_ATTRIBUTES: &'static [(&'static str, AttributeType, AttributeGate)] = &[
+pub const BUILTIN_ATTRIBUTES: &[(&str, AttributeType, AttributeGate)] = &[
     // Normal attributes
 
     ("warn", Normal, Ungated),
@@ -1191,51 +1191,51 @@ fn leveled_feature_err<'a>(sess: &'a ParseSess, feature: &str, span: Span, issue
 
 }
 
-const EXPLAIN_BOX_SYNTAX: &'static str =
+const EXPLAIN_BOX_SYNTAX: &str =
     "box expression syntax is experimental; you can call `Box::new` instead.";
 
-pub const EXPLAIN_STMT_ATTR_SYNTAX: &'static str =
+pub const EXPLAIN_STMT_ATTR_SYNTAX: &str =
     "attributes on non-item statements and expressions are experimental.";
 
-pub const EXPLAIN_ASM: &'static str =
+pub const EXPLAIN_ASM: &str =
     "inline assembly is not stable enough for use and is subject to change";
 
-pub const EXPLAIN_GLOBAL_ASM: &'static str =
+pub const EXPLAIN_GLOBAL_ASM: &str =
     "`global_asm!` is not stable enough for use and is subject to change";
 
-pub const EXPLAIN_LOG_SYNTAX: &'static str =
+pub const EXPLAIN_LOG_SYNTAX: &str =
     "`log_syntax!` is not stable enough for use and is subject to change";
 
-pub const EXPLAIN_CONCAT_IDENTS: &'static str =
+pub const EXPLAIN_CONCAT_IDENTS: &str =
     "`concat_idents` is not stable enough for use and is subject to change";
 
-pub const EXPLAIN_TRACE_MACROS: &'static str =
+pub const EXPLAIN_TRACE_MACROS: &str =
     "`trace_macros` is not stable enough for use and is subject to change";
-pub const EXPLAIN_ALLOW_INTERNAL_UNSTABLE: &'static str =
+pub const EXPLAIN_ALLOW_INTERNAL_UNSTABLE: &str =
     "allow_internal_unstable side-steps feature gating and stability checks";
-pub const EXPLAIN_ALLOW_INTERNAL_UNSAFE: &'static str =
+pub const EXPLAIN_ALLOW_INTERNAL_UNSAFE: &str =
     "allow_internal_unsafe side-steps the unsafe_code lint";
 
-pub const EXPLAIN_CUSTOM_DERIVE: &'static str =
+pub const EXPLAIN_CUSTOM_DERIVE: &str =
     "`#[derive]` for custom traits is deprecated and will be removed in the future.";
 
-pub const EXPLAIN_DEPR_CUSTOM_DERIVE: &'static str =
+pub const EXPLAIN_DEPR_CUSTOM_DERIVE: &str =
     "`#[derive]` for custom traits is deprecated and will be removed in the future. \
     Prefer using procedural macro custom derive.";
 
-pub const EXPLAIN_DERIVE_UNDERSCORE: &'static str =
+pub const EXPLAIN_DERIVE_UNDERSCORE: &str =
     "attributes of the form `#[derive_*]` are reserved for the compiler";
 
-pub const EXPLAIN_VIS_MATCHER: &'static str =
+pub const EXPLAIN_VIS_MATCHER: &str =
     ":vis fragment specifier is experimental and subject to change";
 
-pub const EXPLAIN_LIFETIME_MATCHER: &'static str =
+pub const EXPLAIN_LIFETIME_MATCHER: &str =
     ":lifetime fragment specifier is experimental and subject to change";
 
-pub const EXPLAIN_PLACEMENT_IN: &'static str =
+pub const EXPLAIN_PLACEMENT_IN: &str =
     "placement-in expression syntax is experimental and subject to change.";
 
-pub const EXPLAIN_UNSIZED_TUPLE_COERCION: &'static str =
+pub const EXPLAIN_UNSIZED_TUPLE_COERCION: &str =
     "Unsized tuple coercion is not stable enough for use and is subject to change";
 
 struct PostExpansionVisitor<'a> {

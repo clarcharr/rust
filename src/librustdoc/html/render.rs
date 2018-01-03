@@ -3016,7 +3016,7 @@ fn render_attribute(attr: &ast::MetaItem) -> Option<String> {
     }
 }
 
-const ATTRIBUTE_WHITELIST: &'static [&'static str] = &[
+const ATTRIBUTE_WHITELIST: &[&str] = &[
     "export_name",
     "lang",
     "link_section",
@@ -4101,7 +4101,7 @@ fn item_primitive(w: &mut fmt::Formatter, cx: &Context,
     render_assoc_items(w, cx, it, it.def_id, AssocItemRender::All)
 }
 
-const BASIC_KEYWORDS: &'static str = "rust, rustlang, rust-lang";
+const BASIC_KEYWORDS: &str = "rust, rustlang, rust-lang";
 
 fn make_item_keywords(it: &clean::Item) -> String {
     format!("{}, {}", BASIC_KEYWORDS, it.name.as_ref().unwrap())

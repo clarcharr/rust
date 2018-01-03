@@ -438,7 +438,7 @@ fn escape_char(writer: &mut fmt::Write, v: char) -> EncodeResult {
 }
 
 fn spaces(wr: &mut fmt::Write, mut n: usize) -> EncodeResult {
-    const BUF: &'static str = "                ";
+    const BUF: &str = "                ";
 
     while n >= BUF.len() {
         wr.write_str(BUF)?;

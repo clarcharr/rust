@@ -98,7 +98,7 @@ impl EarlyProps {
         // If the <version2> part is omitted, the second component of the tuple
         // is the same as <version1>.
         fn extract_gdb_version_range(line: &str) -> (u32, u32) {
-            const ERROR_MESSAGE: &'static str = "Malformed GDB version directive";
+            const ERROR_MESSAGE: &str = "Malformed GDB version directive";
 
             let range_components = line.split(&[' ', '-'][..])
                                        .filter(|word| !word.is_empty())
@@ -605,9 +605,9 @@ pub fn lldb_version_to_int(version_string: &str) -> isize {
 }
 
 fn expand_variables(mut value: String, config: &Config) -> String {
-    const CWD: &'static str = "{{cwd}}";
-    const SRC_BASE: &'static str = "{{src-base}}";
-    const BUILD_BASE: &'static str = "{{build-base}}";
+    const CWD: &str = "{{cwd}}";
+    const SRC_BASE: &str = "{{src-base}}";
+    const BUILD_BASE: &str = "{{build-base}}";
 
     if value.contains(CWD) {
         let cwd = env::current_dir().unwrap();

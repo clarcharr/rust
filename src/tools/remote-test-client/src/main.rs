@@ -25,7 +25,7 @@ use std::process::{Command, Stdio};
 use std::thread;
 use std::time::Duration;
 
-const REMOTE_ADDR_ENV: &'static str = "TEST_DEVICE_ADDR";
+const REMOTE_ADDR_ENV: &str = "TEST_DEVICE_ADDR";
 
 macro_rules! t {
     ($e:expr) => (match $e {

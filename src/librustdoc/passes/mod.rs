@@ -36,11 +36,11 @@ pub use self::unindent_comments::unindent_comments;
 mod propagate_doc_cfg;
 pub use self::propagate_doc_cfg::propagate_doc_cfg;
 
-type Pass = (&'static str,                                      // name
-             fn(clean::Crate) -> plugins::PluginResult,         // fn
-             &'static str);                                     // description
+type Pass = (&str,                                       // name
+             fn(clean::Crate) -> plugins::PluginResult,  // fn
+             &str);                                      // description
 
-pub const PASSES: &'static [Pass] = &[
+pub const PASSES: &[Pass] = &[
     ("strip-hidden", strip_hidden,
      "strips all doc(hidden) items from the output"),
     ("unindent-comments", unindent_comments,
@@ -56,7 +56,7 @@ pub const PASSES: &'static [Pass] = &[
      "propagates `#[doc(cfg(...))]` to child items"),
 ];
 
-pub const DEFAULT_PASSES: &'static [&'static str] = &[
+pub const DEFAULT_PASSES: &[&str] = &[
     "strip-hidden",
     "strip-private",
     "collapse-docs",

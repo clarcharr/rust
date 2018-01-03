@@ -319,7 +319,7 @@ fn load_file(cache: &mut Cache,
 }
 
 fn maybe_redirect(source: &str) -> Option<String> {
-    const REDIRECT: &'static str = "<p>Redirecting to <a href=";
+    const REDIRECT: &str = "<p>Redirecting to <a href=";
 
     let mut lines = source.lines();
     let redirect_line = match lines.nth(6) {

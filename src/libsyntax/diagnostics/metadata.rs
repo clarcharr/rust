@@ -25,7 +25,7 @@ use ext::base::ExtCtxt;
 use diagnostics::plugin::{ErrorMap, ErrorInfo};
 
 // Default metadata directory to use for extended error JSON.
-const ERROR_METADATA_PREFIX: &'static str = "tmp/extended-errors";
+const ERROR_METADATA_PREFIX: &str = "tmp/extended-errors";
 
 /// JSON encodable/decodable version of `ErrorInfo`.
 #[derive(PartialEq, RustcDecodable, RustcEncodable)]

@@ -478,12 +478,12 @@ impl<'test> TestCx<'test> {
     fn run_debuginfo_gdb_test_no_opt(&self) {
         let prefixes = if self.config.gdb_native_rust {
             // GDB with Rust
-            static PREFIXES: &'static [&'static str] = &["gdb", "gdbr"];
+            static PREFIXES: &[&str] = &["gdb", "gdbr"];
             println!("NOTE: compiletest thinks it is using GDB with native rust support");
             PREFIXES
         } else {
             // Generic GDB
-            static PREFIXES: &'static [&'static str] = &["gdb", "gdbg"];
+            static PREFIXES: &[&str] = &["gdb", "gdbg"];
             println!("NOTE: compiletest thinks it is using GDB without native rust support");
             PREFIXES
         };
@@ -2015,8 +2015,8 @@ impl<'test> TestCx<'test> {
 
         self.check_no_compiler_crash(&proc_res);
 
-        const PREFIX: &'static str = "TRANS_ITEM ";
-        const CGU_MARKER: &'static str = "@@";
+        const PREFIX: &str = "TRANS_ITEM ";
+        const CGU_MARKER: &str = "@@";
 
         let actual: Vec<TransItem> = proc_res
             .stdout

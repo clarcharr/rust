@@ -86,9 +86,9 @@ static X: i32 = 1;
 const C: i32 = 2;
 
 // these three are not allowed:
-const CR: &'static mut i32 = &mut C;
-static STATIC_REF: &'static mut i32 = &mut X;
-static CONST_REF: &'static mut i32 = &mut C;
+const CR: &mut i32 = &mut C;
+static STATIC_REF: &mut i32 = &mut X;
+static CONST_REF: &mut i32 = &mut C;
 ```
 
 Statics are shared everywhere, and if they refer to mutable data one might
@@ -123,7 +123,7 @@ a known numeric address or to the address of a symbol.
 
 ```
 static MY_STATIC: u32 = 42;
-static MY_STATIC_ADDR: &'static u32 = &MY_STATIC;
+static MY_STATIC_ADDR: &u32 = &MY_STATIC;
 const CONST_ADDR: *const u8 = 0x5f3759df as *const u8;
 ```
 
@@ -648,7 +648,7 @@ Or refer to `A` by reference:
 
 ```
 static A: u32 = 0;
-static B: &'static u32 = &A; // ok!
+static B: &u32 = &A; // ok!
 ```
 "##,
 
@@ -746,7 +746,7 @@ code example:
 use std::sync::atomic::{AtomicUsize, ATOMIC_USIZE_INIT};
 
 const A: AtomicUsize = ATOMIC_USIZE_INIT;
-static B: &'static AtomicUsize = &A;
+static B: &AtomicUsize = &A;
 // error: cannot borrow a constant which may contain interior mutability,
 //        create a static instead
 ```
@@ -764,7 +764,7 @@ So, in order to solve this error, either use statics which are `Sync`:
 use std::sync::atomic::{AtomicUsize, ATOMIC_USIZE_INIT};
 
 static A: AtomicUsize = ATOMIC_USIZE_INIT;
-static B: &'static AtomicUsize = &A; // ok!
+static B: &AtomicUsize = &A; // ok!
 ```
 
 You can also have this error while using a cell type:
@@ -773,7 +773,7 @@ You can also have this error while using a cell type:
 use std::cell::Cell;
 
 const A: Cell<usize> = Cell::new(1);
-const B: &'static Cell<usize> = &A;
+const B: &Cell<usize> = &A;
 // error: cannot borrow a constant which may contain interior mutability,
 //        create a static instead
 
@@ -781,10 +781,10 @@ const B: &'static Cell<usize> = &A;
 struct C { a: Cell<usize> }
 
 const D: C = C { a: Cell::new(1) };
-const E: &'static Cell<usize> = &D.a; // error
+const E: &Cell<usize> = &D.a; // error
 
 // or:
-const F: &'static C = &D; // error
+const F: &C = &D; // error
 ```
 
 This is because cell types do operations that are not thread-safe. Due to this,
@@ -806,7 +806,7 @@ struct NotThreadSafe<T> {
 unsafe impl<T> Sync for NotThreadSafe<T> {}
 
 static A: NotThreadSafe<usize> = NotThreadSafe { value : Cell::new(1) };
-static B: &'static NotThreadSafe<usize> = &A; // ok!
+static B: &NotThreadSafe<usize> = &A; // ok!
 ```
 
 Remember this solution is unsafe! You will have to ensure that accesses to the
@@ -823,7 +823,7 @@ struct Foo {
 }
 
 static S : Foo = Foo { a : 0 };
-static A : &'static u32 = &S.a;
+static A : &u32 = &S.a;
 // error: cannot refer to the interior of another static, use a
 //        constant instead
 ```
@@ -837,7 +837,7 @@ struct Foo {
 }
 
 const S : Foo = Foo { a : 0 };
-static A : &'static u32 = &S.a; // ok!
+static A : &u32 = &S.a; // ok!
 ```
 "##,
 

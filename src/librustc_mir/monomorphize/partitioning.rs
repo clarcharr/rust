@@ -200,7 +200,7 @@ impl<'tcx> CodegenUnitExt<'tcx> for CodegenUnit<'tcx> {
 }
 
 // Anything we can't find a proper codegen unit for goes into this.
-const FALLBACK_CODEGEN_UNIT: &'static str = "__rustc_fallback_codegen_unit";
+const FALLBACK_CODEGEN_UNIT: &str = "__rustc_fallback_codegen_unit";
 
 pub fn partition<'a, 'tcx, I>(tcx: TyCtxt<'a, 'tcx, 'tcx>,
                               trans_items: I,

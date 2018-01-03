@@ -77,7 +77,7 @@ fn trie_range_leaf(c: usize, bitmap_chunk: u64) -> bool {
     ((bitmap_chunk >> (c & 63)) & 1) != 0
 }
 
-fn trie_lookup_range_table(c: char, r: &'static BoolTrie) -> bool {
+fn trie_lookup_range_table(c: char, r: &BoolTrie) -> bool {
     let c = c as usize;
     if c < 0x800 {
         trie_range_leaf(c, r.r1[c >> 6])
@@ -107,7 +107,7 @@ impl SmallBoolTrie {
 }
 
 pub mod general_category {
-    pub const Cc_table: &'static super::SmallBoolTrie = &super::SmallBoolTrie {
+    pub const Cc_table: &super::SmallBoolTrie = &super::SmallBoolTrie {
         r1: &[
             0, 1, 0
         ],
@@ -120,7 +120,7 @@ pub mod general_category {
         Cc_table.lookup(c)
     }
 
-    pub const N_table: &'static super::BoolTrie = &super::BoolTrie {
+    pub const N_table: &super::BoolTrie = &super::BoolTrie {
         r1: [
             0x03ff000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000,
             0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000,
@@ -218,7 +218,7 @@ pub mod general_category {
 }
 
 pub mod derived_property {
-    pub const Alphabetic_table: &'static super::BoolTrie = &super::BoolTrie {
+    pub const Alphabetic_table: &super::BoolTrie = &super::BoolTrie {
         r1: [
             0x0000000000000000, 0x07fffffe07fffffe, 0x0420040000000000, 0xff7fffffff7fffff,
             0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff,
@@ -400,7 +400,7 @@ pub mod derived_property {
         super::trie_lookup_range_table(c, Alphabetic_table)
     }
 
-    pub const Case_Ignorable_table: &'static super::BoolTrie = &super::BoolTrie {
+    pub const Case_Ignorable_table: &super::BoolTrie = &super::BoolTrie {
         r1: [
             0x0400408000000000, 0x0000000140000000, 0x0190a10000000000, 0x0000000000000000,
             0x0000000000000000, 0x0000000000000000, 0x0000000000000000, 0x0000000000000000,
@@ -532,7 +532,7 @@ pub mod derived_property {
         super::trie_lookup_range_table(c, Case_Ignorable_table)
     }
 
-    pub const Cased_table: &'static super::BoolTrie = &super::BoolTrie {
+    pub const Cased_table: &super::BoolTrie = &super::BoolTrie {
         r1: [
             0x0000000000000000, 0x07fffffe07fffffe, 0x0420040000000000, 0xff7fffffff7fffff,
             0xffffffffffffffff, 0xffffffffffffffff, 0xf7ffffffffffffff, 0xfffffffffffffff0,
@@ -631,7 +631,7 @@ pub mod derived_property {
         super::trie_lookup_range_table(c, Cased_table)
     }
 
-    pub const Lowercase_table: &'static super::BoolTrie = &super::BoolTrie {
+    pub const Lowercase_table: &super::BoolTrie = &super::BoolTrie {
         r1: [
             0x0000000000000000, 0x07fffffe00000000, 0x0420040000000000, 0xff7fffff80000000,
             0x55aaaaaaaaaaaaaa, 0xd4aaaaaaaaaaab55, 0xe6512d2a4e243129, 0xaa29aaaab5555240,
@@ -728,7 +728,7 @@ pub mod derived_property {
         super::trie_lookup_range_table(c, Lowercase_table)
     }
 
-    pub const Uppercase_table: &'static super::BoolTrie = &super::BoolTrie {
+    pub const Uppercase_table: &super::BoolTrie = &super::BoolTrie {
         r1: [
             0x0000000000000000, 0x0000000007fffffe, 0x0000000000000000, 0x000000007f7fffff,
             0xaa55555555555555, 0x2b555555555554aa, 0x11aed2d5b1dbced6, 0x55d255554aaaa490,
@@ -826,7 +826,7 @@ pub mod derived_property {
         super::trie_lookup_range_table(c, Uppercase_table)
     }
 
-    pub const XID_Continue_table: &'static super::BoolTrie = &super::BoolTrie {
+    pub const XID_Continue_table: &super::BoolTrie = &super::BoolTrie {
         r1: [
             0x03ff000000000000, 0x07fffffe87fffffe, 0x04a0040000000000, 0xff7fffffff7fffff,
             0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff,
@@ -1001,7 +1001,7 @@ pub mod derived_property {
         super::trie_lookup_range_table(c, XID_Continue_table)
     }
 
-    pub const XID_Start_table: &'static super::BoolTrie = &super::BoolTrie {
+    pub const XID_Start_table: &super::BoolTrie = &super::BoolTrie {
         r1: [
             0x0000000000000000, 0x07fffffe07fffffe, 0x0420040000000000, 0xff7fffffff7fffff,
             0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff, 0xffffffffffffffff,
@@ -1181,7 +1181,7 @@ pub mod derived_property {
 }
 
 pub mod property {
-    pub const Pattern_White_Space_table: &'static super::SmallBoolTrie = &super::SmallBoolTrie {
+    pub const Pattern_White_Space_table: &super::SmallBoolTrie = &super::SmallBoolTrie {
         r1: &[
             0, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1198,7 +1198,7 @@ pub mod property {
         Pattern_White_Space_table.lookup(c)
     }
 
-    pub const White_Space_table: &'static super::SmallBoolTrie = &super::SmallBoolTrie {
+    pub const White_Space_table: &super::SmallBoolTrie = &super::SmallBoolTrie {
         r1: &[
             0, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
             1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -1238,11 +1238,11 @@ pub mod conversions {
         }
     }
 
-    fn bsearch_case_table(c: char, table: &'static [(char, [char; 3])]) -> Option<usize> {
+    fn bsearch_case_table(c: char, table: &[(char, [char; 3])]) -> Option<usize> {
         table.binary_search_by(|&(key, _)| key.cmp(&c)).ok()
     }
 
-    const to_lowercase_table: &'static [(char, [char; 3])] = &[
+    const to_lowercase_table: &[(char, [char; 3])] = &[
         ('\u{41}', ['\u{61}', '\0', '\0']), ('\u{42}', ['\u{62}', '\0', '\0']), ('\u{43}',
         ['\u{63}', '\0', '\0']), ('\u{44}', ['\u{64}', '\0', '\0']), ('\u{45}', ['\u{65}', '\0',
         '\0']), ('\u{46}', ['\u{66}', '\0', '\0']), ('\u{47}', ['\u{67}', '\0', '\0']), ('\u{48}',
@@ -1826,7 +1826,7 @@ pub mod conversions {
         ('\u{1e920}', ['\u{1e942}', '\0', '\0']), ('\u{1e921}', ['\u{1e943}', '\0', '\0'])
     ];
 
-    const to_uppercase_table: &'static [(char, [char; 3])] = &[
+    const to_uppercase_table: &[(char, [char; 3])] = &[
         ('\u{61}', ['\u{41}', '\0', '\0']), ('\u{62}', ['\u{42}', '\0', '\0']), ('\u{63}',
         ['\u{43}', '\0', '\0']), ('\u{64}', ['\u{44}', '\0', '\0']), ('\u{65}', ['\u{45}', '\0',
         '\0']), ('\u{66}', ['\u{46}', '\0', '\0']), ('\u{67}', ['\u{47}', '\0', '\0']), ('\u{68}',

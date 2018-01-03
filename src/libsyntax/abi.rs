@@ -50,7 +50,7 @@ pub struct AbiData {
 }
 
 #[allow(non_upper_case_globals)]
-const AbiDatas: &'static [AbiData] = &[
+const AbiDatas: &[AbiData] = &[
     // Platform-specific ABIs
     AbiData {abi: Abi::Cdecl, name: "cdecl", generic: false },
     AbiData {abi: Abi::Stdcall, name: "stdcall", generic: false },

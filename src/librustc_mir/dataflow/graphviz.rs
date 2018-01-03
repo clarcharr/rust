@@ -138,9 +138,9 @@ impl<'a, 'tcx, MWF, P> dot::Labeller<'a> for Graph<'a, 'tcx, MWF, P>
         let mut v = Vec::new();
         let i = n.index();
         let chunk_size = 5;
-        const BG_FLOWCONTENT: &'static str = r#"bgcolor="pink""#;
-        const ALIGN_RIGHT: &'static str = r#"align="right""#;
-        const FACE_MONOSPACE: &'static str = r#"FACE="Courier""#;
+        const BG_FLOWCONTENT: &str = r#"bgcolor="pink""#;
+        const ALIGN_RIGHT: &str = r#"align="right""#;
+        const FACE_MONOSPACE: &str = r#"FACE="Courier""#;
         fn chunked_present_left<W:io::Write>(w: &mut W,
                                              interpreted: &[DebugFormatted],
                                              chunk_size: usize)

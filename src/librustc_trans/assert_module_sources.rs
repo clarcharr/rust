@@ -32,8 +32,8 @@ use rustc::ty::TyCtxt;
 use syntax::ast;
 use rustc::ich::{ATTR_PARTITION_REUSED, ATTR_PARTITION_TRANSLATED};
 
-const MODULE: &'static str = "module";
-const CFG: &'static str = "cfg";
+const MODULE: &str = "module";
+const CFG: &str = "cfg";
 
 #[derive(Debug, PartialEq, Clone, Copy)]
 enum Disposition { Reused, Translated }

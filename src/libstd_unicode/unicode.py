@@ -276,7 +276,7 @@ def escape_char(c):
 
 def emit_bsearch_range_table(f):
     f.write("""
-fn bsearch_range_table(c: char, r: &'static [(char, char)]) -> bool {
+fn bsearch_range_table(c: char, r: &[(char, char)]) -> bool {
     use core::cmp::Ordering::{Equal, Less, Greater};
     r.binary_search_by(|&(lo, hi)| {
          if c < lo {
@@ -291,7 +291,7 @@ fn bsearch_range_table(c: char, r: &'static [(char, char)]) -> bool {
 }\n
 """)
 
-def emit_table(f, name, t_data, t_type = "&'static [(char, char)]", is_pub=True,
+def emit_table(f, name, t_data, t_type = "&[(char, char)]", is_pub=True,
         pfun=lambda x: "(%s,%s)" % (escape_char(x[0]), escape_char(x[1]))):
     pub_string = ""
     if is_pub:
@@ -347,7 +347,7 @@ fn trie_range_leaf(c: usize, bitmap_chunk: u64) -> bool {
     ((bitmap_chunk >> (c & 63)) & 1) != 0
 }
 
-fn trie_lookup_range_table(c: char, r: &'static BoolTrie) -> bool {
+fn trie_lookup_range_table(c: char, r: &BoolTrie) -> bool {
     let c = c as usize;
     if c < 0x800 {
         trie_range_leaf(c, r.r1[c >> 6])
@@ -410,7 +410,7 @@ def emit_bool_trie(f, name, t_data, is_pub=True):
     pub_string = ""
     if is_pub:
         pub_string = "pub "
-    f.write("    %sconst %s: &'static super::BoolTrie = &super::BoolTrie {\n" % (pub_string, name))
+    f.write("    %sconst %s: &super::BoolTrie = &super::BoolTrie {\n" % (pub_string, name))
     f.write("        r1: [\n")
     data = ','.join('0x%016x' % chunk for chunk in chunks[0:0x800 // CHUNK])
     format_table_content(f, data, 12)
@@ -458,7 +458,7 @@ def emit_small_bool_trie(f, name, t_data, is_pub=True):
     pub_string = ""
     if is_pub:
         pub_string = "pub "
-    f.write("    %sconst %s: &'static super::SmallBoolTrie = &super::SmallBoolTrie {\n"
+    f.write("    %sconst %s: &super::SmallBoolTrie = &super::SmallBoolTrie {\n"
             % (pub_string, name))
 
     (r1, r2) = compute_trie(chunks, 1)
@@ -510,12 +510,12 @@ def emit_conversions_module(f, to_upper, to_lower, to_title):
         }
     }
 
-    fn bsearch_case_table(c: char, table: &'static [(char, [char; 3])]) -> Option<usize> {
+    fn bsearch_case_table(c: char, table: &[(char, [char; 3])]) -> Option<usize> {
         table.binary_search_by(|&(key, _)| key.cmp(&c)).ok()
     }
 
 """)
-    t_type = "&'static [(char, [char; 3])]"
+    t_type = "&[(char, [char; 3])]"
     pfun = lambda x: "(%s,[%s,%s,%s])" % (
         escape_char(x[0]), escape_char(x[1][0]), escape_char(x[1][1]), escape_char(x[1][2]))
     emit_table(f, "to_lowercase_table",

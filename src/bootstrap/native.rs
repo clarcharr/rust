@@ -320,8 +320,8 @@ impl Step for TestHelpers {
     }
 }
 
-const OPENSSL_VERS: &'static str = "1.0.2m";
-const OPENSSL_SHA256: &'static str =
+const OPENSSL_VERS: &str = "1.0.2m";
+const OPENSSL_SHA256: &str =
     "8c6ff15ec6b319b50788f42c7abc2890c08ba5a1cdcd3810eb9092deada37b0f";
 
 #[derive(Debug, Copy, Clone, Hash, PartialEq, Eq)]
