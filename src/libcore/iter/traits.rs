@@ -806,7 +806,11 @@ macro_rules! float_sum_product {
         #[stable(feature = "iter_arith_traits", since = "1.12.0")]
         impl Sum for $a {
             fn sum<I: Iterator<Item=$a>>(iter: I) -> $a {
-                iter.fold(0.0, |a, b| a + b)
+                iter.fold((0.0, 0.0), |(s, c), x| {
+                    let y = x - c;
+                    let t = s + y;
+                    (t, (t - s) - y)
+                }).0
             }
         }
 
@@ -820,7 +824,11 @@ macro_rules! float_sum_product {
         #[stable(feature = "iter_arith_traits", since = "1.12.0")]
         impl<'a> Sum<&'a $a> for $a {
             fn sum<I: Iterator<Item=&'a $a>>(iter: I) -> $a {
-                iter.fold(0.0, |a, b| a + *b)
+                iter.fold((0.0, 0.0), |(s, c), x| {
+                    let y = *x - c;
+                    let t = s + y;
+                    (t, (t - s) - y)
+                }).0
             }
         }
 
