@@ -24,6 +24,9 @@
 # out-of-line and check the unicode.rs file into git.
 
 import re, os, sys, operator, math
+from collections import defaultdict
+from fractions import Fraction
+from copy import copy
 
 preamble = '''// Copyright 2012-2016 The Rust Project Developers. See the COPYRIGHT
 // file at the top-level directory of this distribution and at
@@ -46,7 +49,7 @@ use unicode::mapping_table::MappingTable;
 
 # Mapping taken from Table 12 from:
 # http://www.unicode.org/reports/tr44/#General_Category_Values
-expanded_categories = {
+EXPANDED_CATEGORIES = {
     'Lu': ['LC', 'L'], 'Ll': ['LC', 'L'], 'Lt': ['LC', 'L'],
     'Lm': ['L'], 'Lo': ['L'],
     'Mn': ['M'], 'Mc': ['M'], 'Me': ['M'],
@@ -59,7 +62,7 @@ expanded_categories = {
 }
 
 # these are the surrogate codepoints, which are not valid rust characters
-surrogate_codepoints = (0xd800, 0xdfff)
+SURROGATE_CODEPOINTS = range(0xd800, 0xe000)
 
 def fetch(f):
     if not os.path.exists(os.path.basename(f)):
@@ -71,86 +74,134 @@ def fetch(f):
 
     return open(f)
 
-def is_surrogate(n):
-    return surrogate_codepoints[0] <= n <= surrogate_codepoints[1]
+class CharData(object):
+    @staticmethod
+    def for_lines(lines):
+        range_start = None
+        for line in lines:
+            data = line.split(';')
+            if len(data) != 15:
+                continue
+
+            code = data[0] = int(data[0], 16)
+            if code in SURROGATE_CODEPOINTS:
+                continue
+
+            if data[1].endswith(', First>'):
+                range_start = code
+                continue
+
+            char_data = CharData(data)
+            if range_start is not None:
+                char_data.name = \
+                    '<{}>'.format(char_data.name[len('<'):-len(', Last>')])
+                for c in range(range_start, code):
+                    yield char_data.copy_with_code(c)
+                range_start = None
+
+            yield char_data
+
+    def __init__(self, unicode_data):
+        (
+            self.code,
+            self.name,
+            self.general_category,
+            self.canonical_combining_class,
+            self.bidirectional_category,
+            self.decomposition_mapping,
+            self.decimal_digit_value,
+            self.digit_value,
+            self.numeric_value,
+            self.is_mirrored,
+            self.v1_name,
+            self.iso_10646,
+            self.uppercase_code,
+            self.lowercase_code,
+            self.titlecase_code,
+        ) = (
+            x if type(x) != str or x.strip() != ''
+            else None
+            for x in unicode_data
+        )
+
+        # parse values into the right types; code is already parsed
+        self.canonical_combining_class = int(self.canonical_combining_class)
+        if self.decimal_digit_value:
+            self.decimal_digit_value = int(self.decimal_digit_value)
+        if self.digit_value:
+            self.digit_value = int(self.digit_value)
+        if self.numeric_value:
+            self.numeric_value = Fraction(self.numeric_value)
+        self.is_mirrored = self.is_mirrored == 'Y'
+        if self.uppercase_code:
+            self.uppercase_code = int(self.uppercase_code, 16)
+        if self.lowercase_code:
+            self.lowercase_code = int(self.lowercase_code, 16)
+        if self.titlecase_code:
+            self.titlecase_code = int(self.titlecase_code, 16)
+
+        # parse decomposition mapping into its tag and codepoints
+        self.decomposition_mapping_tag = None
+        if self.decomposition_mapping:
+            self.decomposition_mapping = self.decomposition_mapping.split()
+            if self.decomposition_mapping[0].startswith('<'):
+                [
+                    self.decomposition_mapping_tag,
+                    *self.decomposition_mapping
+                ] = self.decomposition_mapping
+                self.decomposition_mapping_tag = \
+                    self.decomposition_mapping_tag[1:-1]
+            self.decomposition_mapping = tuple(
+                int(x, 16) for x in self.decomposition_mapping
+            )
+
+    def copy_with_code(self, code):
+        new_copy = copy(self)
+        new_copy.code = code
+        return new_copy
+
+    @property
+    def expanded_categories(self):
+        return EXPANDED_CATEGORIES.get(self.general_category, [])
 
 def load_unicode_data():
     uni_data = fetch("UnicodeData.txt")
-    gencats = {}
+    gencats = defaultdict(list)
+    combines = defaultdict(list)
+    assigned = []
     to_lower = {}
     to_upper = {}
     to_title = {}
-    combines = {}
     canon_decomp = {}
     compat_decomp = {}
 
-    udict = {}
-    range_start = -1
-    for line in uni_data:
-        data = line.split(';')
-        if len(data) != 15:
-            continue
-        cp = int(data[0], 16)
-        if is_surrogate(cp):
-            continue
-        if range_start >= 0:
-            for i in range(range_start, cp):
-                udict[i] = data
-            range_start = -1
-        if data[1].endswith(", First>"):
-            range_start = cp
-            continue
-        udict[cp] = data
+    for char_data in CharData.for_lines(uni_data):
+        code = char_data.code
 
-    for code in udict:
-        (code_org, name, gencat, combine, bidi,
-         decomp, deci, digit, num, mirror,
-         old, iso, upcase, lowcase, titlecase) = udict[code]
+        if char_data.lowercase_code:
+            to_lower[code] = (char_data.lowercase_code, 0, 0)
+        if char_data.uppercase_code:
+            to_upper[code] = (char_data.uppercase_code, 0, 0)
+        if char_data.titlecase_code:
+            to_title[code] = (char_data.titlecase_code, 0, 0)
 
-        # generate char to char direct common and simple conversions
-        # uppercase to lowercase
-        if lowcase != "" and code_org != lowcase:
-            to_lower[code] = (int(lowcase, 16), 0, 0)
+        if char_data.decomposition_mapping:
+            compat_decomp[code] = char_data.decomposition_mapping
 
-        # lowercase to uppercase
-        if upcase != "" and code_org != upcase:
-            to_upper[code] = (int(upcase, 16), 0, 0)
+        assigned.append(char_data.code)
+        gencats[char_data.general_category].append(char_data.code)
+        for cat in char_data.expanded_categories:
+            gencats[cat].append(char_data.code)
 
-        # title case
-        if titlecase.strip() != "" and code_org != titlecase:
-            to_title[code] = (int(titlecase, 16), 0, 0)
-
-        # store decomposition, if given
-        if decomp != "":
-            if decomp.startswith('<'):
-                seq = []
-                for i in decomp.split()[1:]:
-                    seq.append(int(i, 16))
-                compat_decomp[code] = seq
-            else:
-                seq = []
-                for i in decomp.split():
-                    seq.append(int(i, 16))
-                canon_decomp[code] = seq
-
-        # place letter in categories as appropriate
-        for cat in [gencat, "Assigned"] + expanded_categories.get(gencat, []):
-            if cat not in gencats:
-                gencats[cat] = []
-            gencats[cat].append(code)
-
-        # record combining class, if any
-        if combine != "0":
-            if combine not in combines:
-                combines[combine] = []
-            combines[combine].append(code)
+        if char_data.canonical_combining_class:
+            combines[char_data.canonical_combining_class].append(code)
 
     # generate Not_Assigned from Assigned
-    gencats["Cn"] = gen_unassigned(gencats["Assigned"])
-    # Assigned is not a real category
-    del(gencats["Assigned"])
+    gencats["Cn"] = gen_unassigned(assigned)
+
     # Other contains Not_Assigned
     gencats["C"].extend(gencats["Cn"])
+
     gencats = group_cats(gencats)
     combines = to_combines(group_cats(combines))
 
