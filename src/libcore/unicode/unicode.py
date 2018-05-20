@@ -166,9 +166,9 @@ class CharData(object):
 
 def load_unicode_data():
     uni_data = fetch("UnicodeData.txt")
-    gencats = defaultdict(list)
-    combines = defaultdict(list)
-    assigned = []
+    gencats = defaultdict(set)
+    combines = defaultdict(set)
+    assigned = set()
     to_lower = {}
     to_upper = {}
     to_title = {}
@@ -188,22 +188,28 @@ def load_unicode_data():
         if char_data.decomposition_mapping:
             compat_decomp[code] = char_data.decomposition_mapping
 
-        assigned.append(char_data.code)
-        gencats[char_data.general_category].append(char_data.code)
+        assigned.add(char_data.code)
+        gencats[char_data.general_category].add(char_data.code)
         for cat in char_data.expanded_categories:
-            gencats[cat].append(char_data.code)
+            gencats[cat].add(char_data.code)
 
         if char_data.canonical_combining_class:
-            combines[char_data.canonical_combining_class].append(code)
+            combines[char_data.canonical_combining_class].add(code)
 
     # generate Not_Assigned from Assigned
-    gencats["Cn"] = gen_unassigned(assigned)
+    gencats["Cn"].update(range(0, 0xd800))
+    gencats["Cn"].update(range(0xe000, 0x110000))
+    gencats["Cn"].difference_update(assigned)
 
-    # Other contains Not_Assigned
-    gencats["C"].extend(gencats["Cn"])
+    # add Not_Assigned to Other
+    gencats["C"].update(gencats["Cn"])
 
     gencats = group_cats(gencats)
-    combines = to_combines(group_cats(combines))
+    combines = sorted(
+        (lo, hi, comb)
+        for comb, ranges in group_cats(combines).items()
+        for lo, hi in ranges
+    )
 
     return (canon_decomp, compat_decomp, gencats, combines, to_upper, to_lower, to_title)
 
@@ -233,50 +239,30 @@ def load_special_casing(to_upper, to_lower, to_title):
                 map_[key] = values
 
 def group_cats(cats):
-    cats_out = {}
-    for cat in cats:
-        cats_out[cat] = group_cat(cats[cat])
-    return cats_out
+    return {cat: list(group_cat(members)) for cat, members in cats.items()}
 
 def group_cat(cat):
-    cat_out = []
-    letters = sorted(set(cat))
-    cur_start = letters.pop(0)
+    chars = iter(sorted(cat))
+    cur_start = next(chars)
     cur_end = cur_start
-    for letter in letters:
-        assert letter > cur_end, \
-            "cur_end: {:#x}, letter: {:#x}".format(cur_end, letter)
-        if letter == cur_end + 1:
-            cur_end = letter
+    for char in chars:
+        assert char > cur_end, "cur_end {:#x}, char {:#x}".format(cur_end, char)
+        if char == cur_end + 1:
+            cur_end = char
         else:
-            cat_out.append((cur_start, cur_end))
-            cur_start = cur_end = letter
-    cat_out.append((cur_start, cur_end))
-    return cat_out
+            yield (cur_start, cur_end)
+            (cur_start, cur_end) = (char, char)
+    yield (cur_start, cur_end)
 
 def ungroup_cat(cat):
-    cat_out = []
-    for (lo, hi) in cat:
-        while lo <= hi:
-            cat_out.append(lo)
-            lo += 1
-    return cat_out
+    return [code for (lo, hi) in cat for code in range(lo, hi + 1)]
 
-def gen_unassigned(assigned):
-    assigned = set(assigned)
-    return ([i for i in range(0, 0xd800) if i not in assigned] +
-            [i for i in range(0xe000, 0x110000) if i not in assigned])
-
-def to_combines(combs):
-    combs_out = []
-    for comb in combs:
-        for (lo, hi) in combs[comb]:
-            combs_out.append((lo, hi, comb))
-    combs_out.sort(key=lambda comb: comb[0])
-    return combs_out
+def regroup_cat(cat):
+    return list(group_cat(ungroup_cat(cat)))
 
 def format_table_content(f, content, indent):
-    line = " "*indent
+    indent = " " * indent
+    line = indent
     first = True
     for chunk in content:
         if len(line) + len(chunk) < 98:
@@ -287,7 +273,7 @@ def format_table_content(f, content, indent):
             first = False
         else:
             f.write(line + ",\n")
-            line = " "*indent + chunk
+            line = indent + chunk
     f.write(line)
 
 def load_properties(fname, interestingprops):
@@ -323,7 +309,7 @@ def load_properties(fname, interestingprops):
 
     # optimize if possible
     for prop in props:
-        props[prop] = group_cat(ungroup_cat(props[prop]))
+        props[prop] = regroup_cat(props[prop])
 
     return props
 
