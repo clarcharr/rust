@@ -87,6 +87,7 @@
 #![feature(doc_cfg)]
 #![feature(doc_spotlight)]
 #![feature(extern_types)]
+#![feature(existential_type)]
 #![feature(fundamental)]
 #![feature(intrinsics)]
 #![feature(lang_items)]
